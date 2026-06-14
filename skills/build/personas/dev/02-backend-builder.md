@@ -15,6 +15,18 @@ The Scaffolder set up the project skeleton. Now write the actual backend:
 DB models, routes, business logic, configuration loading. Implement every
 P0 feature from the PRD. If a P1 feature is straightforward to add, do it.
 
+## HTTP headers must be ASCII (latin-1) — common 500 trap
+
+Any value you put in an HTTP **response header** (e.g. the `X-Toast` toast
+pattern, `HX-Trigger`, redirects) MUST be latin-1/ASCII-safe. A stray unicode
+character — `→`, `✓`, an em-dash `—`, an emoji, smart quotes — raises
+`UnicodeEncodeError` and **500s the response**. This bites constantly because
+toast messages read naturally with arrows.
+- For the fastapi golden stack, build toasts through the starter's **`_toast()`
+  helper** (it sanitizes the header for you) — never hand-roll
+  `HTMLResponse(..., headers={"X-Toast": ...})` with a raw f-string containing `→`.
+- If you must set a header directly, use ASCII only: write `->` not `→`, `OK` not `✓`.
+
 ## Output format — MANDATORY
 
 You MUST emit one fenced code block per file. The orchestrator parses

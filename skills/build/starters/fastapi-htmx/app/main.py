@@ -26,6 +26,18 @@ app = FastAPI(title=APP_NAME)
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
+
+def _toast(html: str, message: str, status_code: int = 200) -> HTMLResponse:
+    """Return an HTMX fragment plus a toast message.
+
+    The toast travels in the `X-Toast` HTTP header, which MUST be latin-1
+    (ASCII) safe — a stray unicode char (→, ✓, em-dash, emoji) in a header
+    value raises UnicodeEncodeError and 500s the response. Always build toasts
+    through this helper so that can never happen.
+    """
+    safe = (message or "").encode("ascii", "replace").decode("ascii")
+    return HTMLResponse(html, status_code=status_code, headers={"X-Toast": safe})
+
 # Inline SVG icons (stroke=currentColor) so the nav has no external asset deps.
 _ICONS = {
     "grid": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>',
@@ -91,14 +103,14 @@ def create_item(request: Request, name: str = Form(...), owner: str = Form("—"
     _NEXT_ID[0] += 1
     _ITEMS.append(item)
     html = templates.get_template("partials/item_row.html").render(ctx(request, "items", item=item))
-    return HTMLResponse(html, headers={"X-Toast": f"Added '{item['name']}'"})
+    return _toast(html, f"Added '{item['name']}'")
 
 
 @app.delete("/items/{item_id}", response_class=HTMLResponse)
 def delete_item(item_id: int):
     global _ITEMS
     _ITEMS = [i for i in _ITEMS if i["id"] != item_id]
-    return HTMLResponse("", headers={"X-Toast": "Item removed"})
+    return _toast("", "Item removed")
 
 
 @app.get("/roadmap", response_class=HTMLResponse)

@@ -6,7 +6,7 @@
       "name": "aina-skill",
       "source": "./",
       "description": "AiNa App Factory — request → full doc set (braindoc/SOW/PRD/dev/security/marketing/ops) + working codebase, run by your local Claude.",
-      "version": "0.1.0"
+      "version": "0.1.1"
     }
   ]
 }

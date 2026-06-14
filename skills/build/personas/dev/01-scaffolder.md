@@ -33,6 +33,9 @@ For a fastapi build, your job is to **extend** that starter, not replace it:
 - Add only what's domain-specific: real routes/models in `app/`, new pages in
   `templates/pages/`, partials in `templates/partials/`, and nav entries.
 - Keep the `/roadmap` page and update its items to this app's real roadmap.
+- For toast messages, reuse the starter's `_toast(html, msg)` helper — it keeps
+  the `X-Toast` header ASCII-safe. A raw unicode char (`→`, emoji) in any HTTP
+  header value 500s the response, so never hand-build `headers={"X-Toast": ...}`.
 
 (If `stack.framework == nextjs`, scaffold the Next.js project per the version
 rules below — no starter is seeded for it yet.)
