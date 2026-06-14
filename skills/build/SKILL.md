@@ -13,18 +13,24 @@ persona yourself; no server and no API key are required.
 
 ## Setup
 
-- `PLUGIN_ROOT` = `${CLAUDE_PLUGIN_ROOT}` — this plugin's directory.
+- `SKILL_DIR` = `${CLAUDE_SKILL_DIR}` — this skill's own directory (works whether
+  installed via npm into `~/.claude/skills/aina-skill/` or as a plugin). Personas,
+  starters, and scripts all live inside it.
 - `PY` = `python3` (the helper scripts are stdlib-only; no venv).
-- **Personas** (the IP that writes the docs): `$PLUGIN_ROOT/personas/<stage>/*.md`,
+- **Personas** (the IP that writes the docs): `$SKILL_DIR/personas/<stage>/*.md`,
   run in their `order:` frontmatter.
-- **Scripts**: `$PLUGIN_ROOT/scripts/{classify_stack,seed_starter,package_output}.py`.
-- **Config** (from plugin userConfig, with `aina-build.yaml` in the CWD overriding):
-  - `${CLAUDE_PLUGIN_OPTION_ENGINE}` — `local` (default) | `openrouter`
-  - `${CLAUDE_PLUGIN_OPTION_OPENROUTER_API_KEY}` — only for engine=openrouter
-  - `${CLAUDE_PLUGIN_OPTION_OUTPUT_MODE}` — `folder` | `zip` (default) | `git-repo`
-  - `${CLAUDE_PLUGIN_OPTION_GITHUB_ORG}` — owner for git-repo mode (blank = personal)
-  - `${CLAUDE_PLUGIN_OPTION_DEPLOY_TARGET}` — `none` (default) | `vps` | `vercel`
-  - `${CLAUDE_PLUGIN_OPTION_VPS_HOST}` — `user@host` for deploy_target=vps
+- **Scripts**: `$SKILL_DIR/scripts/{classify_stack,seed_starter,package_output}.py`.
+- **Config** — resolve each setting in this order: (1) `aina-build.yaml` in the CWD,
+  (2) environment variable, (3) plugin userConfig (`${CLAUDE_PLUGIN_OPTION_<NAME>}`,
+  set only when installed as a plugin), else the default:
+  | setting | env var | default |
+  |---------|---------|---------|
+  | engine | `AINA_ENGINE` | `local` (or `openrouter`) |
+  | openrouter key | `OPENROUTER_API_KEY` | — (only for engine=openrouter) |
+  | output mode | `AINA_OUTPUT_MODE` | `zip` (or `folder` / `git-repo`) |
+  | github org | `AINA_GITHUB_ORG` | — (blank = personal account) |
+  | deploy target | `AINA_DEPLOY_TARGET` | `none` (or `vps` / `vercel`) |
+  | vps host | `AINA_VPS_HOST` | — (for deploy_target=vps) |
 
 ## Engine
 
@@ -58,7 +64,7 @@ Then write **`docs/01-braindoc.md`** — the framed problem, users, scope, risks
 
 Run the classifier on the brief:
 ```
-$PY "$PLUGIN_ROOT/scripts/classify_stack.py" --text "<brief + features>" --archetype <archetype>
+$PY "$SKILL_DIR/scripts/classify_stack.py" --text "<brief + features>" --archetype <archetype>
 ```
 It returns `lean` + `profile` (backend → FastAPI+HTMX → vps; frontend → Next.js+
 shadcn → vercel). Confirm with the user if they're present, else take the default.
@@ -67,7 +73,7 @@ shadcn → vercel). Confirm with the user if they're present, else take the defa
 
 Run these stages in order; each one is a gate (summarize, let the user
 approve/edit before continuing). For each stage, read
-`$PLUGIN_ROOT/personas/<stage>/*.md` (sorted by `order:`), execute each persona,
+`$SKILL_DIR/personas/<stage>/*.md` (sorted by `order:`), execute each persona,
 thread outputs forward, and **write the stage document**:
 
 | Stage | Personas dir | Document |
@@ -88,12 +94,12 @@ docs if the user asks or the project warrants it.)
 
 1. Seed the golden starter for the chosen framework into `app/`:
    ```
-   $PY "$PLUGIN_ROOT/scripts/seed_starter.py" ./aina-out/<slug>/app fastapi
+   $PY "$SKILL_DIR/scripts/seed_starter.py" ./aina-out/<slug>/app fastapi
    ```
    (FastAPI ships a professional shell — sidebar/design-system/HTMX — so it can't
    render bland.)
 2. Implement the real app by **extending** the starter (follow
-   `$PLUGIN_ROOT/personas/dev/01-scaffolder.md` + `03-frontend-builder.md`): reuse
+   `$SKILL_DIR/personas/dev/01-scaffolder.md` + `03-frontend-builder.md`): reuse
    the design-system classes, add real routes/models/pages, keep `/roadmap`. Never
    re-emit the base CSS/layout, never ship a stub page.
 3. **Verify** (the terminal advantage): actually run it
@@ -104,7 +110,7 @@ docs if the user asks or the project warrants it.)
 ## 4. Package the output
 
 ```
-$PY "$PLUGIN_ROOT/scripts/package_output.py" ./aina-out/<slug> ${output_mode} \
+$PY "$SKILL_DIR/scripts/package_output.py" ./aina-out/<slug> ${output_mode} \
     --org "${github_org}" --private
 ```
 - `folder` → leaves it on disk · `zip` → also writes `<slug>.zip` · `git-repo` →
@@ -132,7 +138,7 @@ Print plainly:
 - **The installer's Claude is the engine.** No author server, no required API key.
   OpenRouter is an optional accelerator, not a dependency.
 - **Self-contained.** Everything needed (personas, starters, scripts) ships in this
-  plugin; reference it via `$PLUGIN_ROOT`. No external repo, no hardcoded hosts.
+  plugin; reference it via `$SKILL_DIR`. No external repo, no hardcoded hosts.
 - **Honor the golden-stack guarantees:** no bland output, no stub pages, one design
   system, the right stack for the job.
 - **Verify before you ship.** Run and fix the app; don't one-shot it.

@@ -10,22 +10,25 @@ doc in `docs/`, so you walk away with the thinking *and* the code.
 
 ## Install
 
+**One-liner — works in any environment (recommended):**
 ```bash
-# Add the marketplace (one-time)
-/plugin marketplace add ainadx/aina-skill
-# Install
-/plugin install aina-skill
+npx aina-skill@latest             # → ~/.claude/skills/aina-skill (all projects)
+npx aina-skill@latest --project   # → ./.claude/skills/aina-skill (this repo only)
 ```
-Or try it for one session without installing:
+Restart Claude Code, then run **`/aina-skill`**. Needs only Node + python3.
+
+**Or as a Claude Code plugin** (adds a guided config prompt + marketplace updates):
 ```bash
-claude --plugin-dir /path/to/aina-skill
+/plugin marketplace add ainadx/aina-skill
+/plugin install aina-skill          # → /aina-skill:build
 ```
 
 ## Use
 
 ```
-/aina-skill:build      then describe what you want to build
+/aina-skill        (npm install)   ·   /aina-skill:build   (plugin install)
 ```
+…then describe what you want to build.
 You'll be asked a short intake round, shown each stage for approval, and end with:
 ```
 aina-out/<slug>/
