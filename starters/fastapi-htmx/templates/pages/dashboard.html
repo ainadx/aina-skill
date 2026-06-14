@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block heading %}Dashboard{% endblock %}
+{% block actions %}
+  <a class="btn" href="/roadmap">View roadmap</a>
+  <a class="btn btn--primary" href="/items">+ New item</a>
+{% endblock %}
+{% block content %}
+  <div class="grid grid--stats">
+    {% for s in stats %}
+      <div class="card stat">
+        <div class="stat__label">{{ s.label }}</div>
+        <div class="stat__value">{{ s.value }}</div>
+        <div class="stat__delta {{ s.dir }}">{{ "▲" if s.dir == "up" else "▼" }} {{ s.delta }}</div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="grid grid--2 mt-3">
+    <div class="card">
+      <div class="card__head">
+        <div class="card__title">Recent items</div>
+        <a class="btn btn--ghost btn--sm" href="/items">See all →</a>
+      </div>
+      <table class="table">
+        <thead><tr><th>Name</th><th>Owner</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for it in items %}
+            <tr>
+              <td><strong>{{ it.name }}</strong></td>
+              <td class="muted">{{ it.owner }}</td>
+              <td>
+                {% set cls = {'active':'badge--accent','review':'badge--warning','done':'badge--success'}.get(it.status,'') %}
+                <span class="badge {{ cls }}">{{ it.status }}</span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card__head"><div class="card__title">Get started</div></div>
+      <div class="card__body">
+        <p class="muted">This is your app shell — a professional, server-rendered
+        starting point. Replace the demo data, add your routes, and fill in the
+        pages. The chrome, styling, and HTMX interactivity come for free.</p>
+        <div class="row wrap mt-2">
+          <span class="badge badge--success">FastAPI</span>
+          <span class="badge badge--accent">HTMX</span>
+          <span class="badge">Jinja2</span>
+          <span class="badge">No build step</span>
+        </div>
+        <a class="btn btn--primary mt-3" href="/items">Try the live demo →</a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

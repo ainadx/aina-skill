@@ -1,0 +1,26 @@
+# Optional: drop a copy named `aina-build.yaml` in your CWD to override the
+# plugin's userConfig per build. Anything omitted falls back to the plugin
+# config (set at /plugin install) or is asked at runtime.
+
+product:
+  name: "Acme Console"
+  brief: |
+    What it does, who it's for, the must-have features, any constraints.
+  archetype: internal-tool      # utility | saas | content-site | internal-tool | ai-app
+
+engine: local                   # local (your Claude) | openrouter
+
+stages:                         # default set; add security/readiness/docs if needed
+  - intent
+  - ideation
+  - dev
+  - marketing
+  - ops
+
+output:
+  mode: zip                     # folder | zip | git-repo
+  github_org: ""                # for git-repo mode; blank = personal account
+
+deploy:
+  target: none                  # none | vps | vercel
+  vps_host: ""                  # user@host of your own Docker server (vps mode)
