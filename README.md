@@ -12,8 +12,8 @@ doc in `docs/`, so you walk away with the thinking *and* the code.
 
 **One-liner — works in any environment (recommended):**
 ```bash
-npx aina-skill@latest             # → ~/.claude/skills/aina-skill (all projects)
-npx aina-skill@latest --project   # → ./.claude/skills/aina-skill (this repo only)
+npx @whitenoisenpm/aina-skill@latest             # → ~/.claude/skills/aina-skill (all projects)
+npx @whitenoisenpm/aina-skill@latest --project   # → ./.claude/skills/aina-skill (this repo only)
 ```
 Restart Claude Code, then run **`/aina-skill`**. Needs only Node + python3.
 

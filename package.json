@@ -1,6 +1,7 @@
 {
-  "name": "aina-skill",
+  "name": "@whitenoisenpm/aina-skill",
   "version": "0.1.0",
+  "publishConfig": { "access": "public" },
   "description": "One-line installer for the AiNa App Factory skill — turn a request into a full document set (braindoc/SOW/PRD/dev/security/marketing/ops) + working codebase, run by your local Claude Code.",
   "bin": { "aina-skill": "bin/install.mjs" },
   "type": "module",
